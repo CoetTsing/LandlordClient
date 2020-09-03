@@ -13,3 +13,10 @@ WaitPage::~WaitPage()
     delete ui;
 }
 
+
+void WaitPage::on_pushButton_clicked()
+{
+    game = new GamePage;
+    this->close();
+    game->show();
+}

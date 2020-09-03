@@ -2,6 +2,7 @@
 #define GAMEPAGE_H
 
 #include <QWidget>
+#include <QTcpSocket>
 
 namespace Ui {
 class GamePage;
@@ -17,6 +18,10 @@ public:
 
 private:
     Ui::GamePage *ui;
+    QTcpSocket* clientSocket = nullptr;
+
+private slots:
+    void readInfo();
 };
 
 #endif // GAMEPAGE_H
