@@ -2,6 +2,7 @@
 #include "ui_gamepage.h"
 #include <QDebug>
 #include <algorithm>
+#include <QMouseEvent>
 
 GamePage::GamePage(QWidget *parent) :
     QWidget(parent),
@@ -13,6 +14,9 @@ GamePage::GamePage(QWidget *parent) :
     ui->label_6->hide();
     ui->ask->hide();
     ui->noask->hide();
+    ui->go->hide();
+    ui->nogo->hide();
+    setMouseTracking(true);
     clientSocket = new QTcpSocket(this);
     qint16 port = 8888;
     clientSocket->connectToHost("127.0.0.1", port);
@@ -83,6 +87,11 @@ void GamePage::readInfo() {
                 showCards();
             }
             tmp = tmp.right(tmp.size() - 13);
+        } else if (*tmp.begin() == '5') {
+            nowPlayer = *(tmp.begin() + 1) - '0';
+            hide();
+            go();
+            tmp = tmp.right(tmp.size() - 4);
         }
     }
 }
@@ -123,6 +132,21 @@ void GamePage::showCards() {
         labels[i]->resize(143, 193);
         labels[i]->move(200 + i * 40, 550);
         labels[i]->show();
+    }
+}
+
+void GamePage::mousePressEvent(QMouseEvent *event) {
+    int x = event->x();
+    int y = event->y();
+    int n = 0;
+    if (x >= 200 && x <= 200 + 40 * cards.size() && y <= 743 && y >= 550)
+        n = (x - 200) / 40;
+    cardsChosen[n] = !cardsChosen[n];
+    for (int i = 0; i < cards.size(); i++) {
+        if (cardsChosen[i])
+            labels[i]->move(200 + i * 40, 530);
+        else
+           labels[i]->move(200 + i * 40, 550);
     }
 }
 
@@ -194,6 +218,13 @@ void GamePage::heIsLord() {
     clientSocket->write(iAmLord.toUtf8().data());
 }
 
+void GamePage::go() {
+    if (nowPlayer == playerId) {
+        ui->go->show();
+        ui->nogo->show();
+    }
+}
+
 void GamePage::on_ask_clicked()
 {
     lord += QString::number(playerId);
@@ -228,4 +259,14 @@ void GamePage::on_noask_clicked()
     }
     ui->ask->hide();
     ui->noask->hide();
+}
+
+void GamePage::on_go_clicked()
+{
+
+}
+
+void GamePage::on_nogo_clicked()
+{
+
 }
