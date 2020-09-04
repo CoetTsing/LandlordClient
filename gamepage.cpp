@@ -50,7 +50,8 @@ void GamePage::readInfo() {
                 ui->label_3->setText("P2");
             }
             for (int i = 0; i < 3; i++) {
-                delete labelsLord[i];
+                if (labelsLord[i] != nullptr)
+                    delete labelsLord[i];
                 labelsLord[i] = new QLabel(this);
                 QString path = ":/cards/" + QString::number(1316) + ".png";
                 QPixmap pic(path);
@@ -70,6 +71,24 @@ void GamePage::readInfo() {
             showCards();
             tmp = tmp.right(tmp.size() - 69);
         } else if (*tmp.begin() == '2') {
+            ui->label_7->hide();
+            ui->label_8->hide();
+            ui->label_9->hide();
+            ui->label_13->setText("");
+            ui->label_14->setText("");
+            for (int i = 0; i < 3; i++) {
+                if (labelsLord[i] != nullptr)
+                    delete labelsLord[i];
+                labelsLord[i] = new QLabel(this);
+                QString path = ":/cards/" + QString::number(1316) + ".png";
+                QPixmap pic(path);
+                pic.scaled(72, 97, Qt::KeepAspectRatio);
+                labelsLord[i]->setScaledContents(true);
+                labelsLord[i]->setPixmap(pic);
+                labelsLord[i]->resize(72, 97);
+                labelsLord[i]->move(464 + i * 100, 30);
+                labelsLord[i]->show();
+            }
             nowPlayer = *(tmp.begin() + 1) - '0';
             hide();
             lord = "";
@@ -107,9 +126,9 @@ void GamePage::readInfo() {
             }
             ui->label_13->setNum(p1);
             ui->label_14->setNum(p2);
-            ui->label_10->hide();
-            ui->label_11->hide();
-            ui->label_12->hide();
+            ui->label_10->setText("");
+            ui->label_11->setText("");
+            ui->label_12->setText("");
             if (playerId == 2) {
                 if (lordplayer == 1)
                     ui->label_9->show();
@@ -184,7 +203,7 @@ void GamePage::readInfo() {
             tmp = tmp.right(tmp.size() - 2);
         } else if (*tmp.begin() == '7') {
             nowPlayer = *(tmp.begin() + 1) - '0';
-            if (nowPlayer == playerId) {
+            if ((nowPlayer == lordplayer && playerId == lordplayer) || (nowPlayer != lordplayer && playerId != lordplayer)) {
                 QMessageBox::information(this, "胜利", "胜利!");
                 ui->go->hide();
                 ui->nogo->hide();
@@ -198,6 +217,9 @@ void GamePage::readInfo() {
                 ui->exit->show();
             }
             tmp = tmp.right(tmp.size() - 2);
+        } else if (*tmp.begin() == '9') {
+            tmp = tmp.right(tmp.size() - 1);
+            this->close();
         }
     }
 }
@@ -627,10 +649,10 @@ void GamePage::on_go_clicked()
                 return;
             }
         } else {
-            QMessageBox::information(this, "警告", "牌型不符合规则!");
+            QMessageBox::information(this, "警告", "出牌不符合规则!");
         }
     } else
-        QMessageBox::information(this, "警告", "牌型不符合规则!");
+        QMessageBox::information(this, "警告", "出牌不符合规则!");
 }
 
 void GamePage::on_nogo_clicked()
@@ -648,10 +670,28 @@ void GamePage::on_nogo_clicked()
 
 void GamePage::on_again_clicked()
 {
-
+    if (cardsCenter.size() != 0)
+        cardsCenter.clear();
+    showCardsCenter();
+    if (cards.size() != 0)
+        cards.clear();
+    showCards();
+    for (int i = 0; i < 21; i++)
+        cardsChosen[i] = 0;
+    lord = "";
+    if (cardsToGo.size() != 0)
+        cardsToGo.clear();
+    p1 = 17;
+    p2 = 17;
+    cardsLord.clear();
+    QString again = "8";
+    clientSocket->write(again.toUtf8().data());
+    ui->again->hide();
+    ui->exit->hide();
 }
 
 void GamePage::on_exit_clicked()
 {
-    this->close();
+    QString e = "9";
+    clientSocket->write(e.toUtf8().data());
 }

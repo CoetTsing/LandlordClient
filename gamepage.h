@@ -51,7 +51,6 @@ private:
     int p1 = 17;
     int p2 = 17;
 
-
 private slots:
     void readInfo();
     void on_ask_clicked();
