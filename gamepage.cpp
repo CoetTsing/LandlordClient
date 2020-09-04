@@ -49,19 +49,6 @@ void GamePage::readInfo() {
                 ui->label_2->setText("P1");
                 ui->label_3->setText("P2");
             }
-            for (int i = 0; i < 3; i++) {
-                if (labelsLord[i] != nullptr)
-                    delete labelsLord[i];
-                labelsLord[i] = new QLabel(this);
-                QString path = ":/cards/" + QString::number(1316) + ".png";
-                QPixmap pic(path);
-                pic.scaled(72, 97, Qt::KeepAspectRatio);
-                labelsLord[i]->setScaledContents(true);
-                labelsLord[i]->setPixmap(pic);
-                labelsLord[i]->resize(72, 97);
-                labelsLord[i]->move(464 + i * 100, 30);
-                labelsLord[i]->show();
-            }
             tmp = tmp.right(tmp.size() - 2);
         } else if (*tmp.begin() == '1') {
             for (int i = 1; i <= 68; i += 4) {
@@ -230,7 +217,8 @@ bool GamePage::cmp(int a, int b) {
 
 void GamePage::showCardsLord() {
     for (int i = 0; i < 3; i++) {
-        delete labelsLord[i];
+        if (labelsLord[i] != nullptr)
+            delete labelsLord[i];
         labelsLord[i] = new QLabel(this);
         QString path = ":/cards/" + QString::number(cardsLord[i]) + ".png";
         QPixmap pic(path);
